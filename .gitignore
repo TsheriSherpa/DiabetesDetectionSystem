@@ -13,3 +13,4 @@ myenv/*
 .vscode
 app/__pycache__
 __pycache__
+myenv.sh
