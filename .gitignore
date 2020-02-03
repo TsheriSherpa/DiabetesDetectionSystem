@@ -10,3 +10,6 @@ yarn-error.log
 env/
 myenv
 myenv/*
+.vscode
+app/__pycache__
+__pycache__
