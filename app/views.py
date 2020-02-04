@@ -9,7 +9,8 @@ from werkzeug.exceptions import HTTPException, NotFound, abort
 # App modules
 from app        import app, lm, db, bc
 from app.models import User
-from app.forms  import LoginForm, RegisterForm, ProfileUpdateForm
+from app.forms  import LoginForm, RegisterForm, ProfileUpdateForm, DetectDiabetesForm
+from app.test   import check
 
 # provide login manager with load_user callback
 @lm.user_loader
@@ -22,6 +23,7 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+
 # Register a new user
 @app.route('/register.html', methods=['GET', 'POST'])
 def register():
@@ -30,7 +32,8 @@ def register():
 
     if request.method == 'GET': 
         return render_template('layouts/auth-default.html',
-                                content=render_template( 'pages/register.html', form=form, msg=msg ) )
+                                content=render_template( 'pages/register.html',
+                                form=form, msg=msg ) )
 
     # check if both http method is POST and form is valid on submit
     if form.validate_on_submit():
@@ -53,23 +56,19 @@ def register():
         msg = 'Input error'     
 
     return render_template('layouts/auth-default.html',
-                            content=render_template( 'pages/register.html', form=form, msg=msg ) )
+                            content=render_template( 'pages/register.html',
+                            form=form, msg=msg ) )
+
+
 
 # Authenticate user
 @app.route('/login.html', methods=['GET', 'POST'])
 def login():
-    
-    # Declare the login form
     form = LoginForm(request.form)
-
-    # Flask message injected into the page, in case of any errors
     msg = None
-
-    # check if both http method is POST and form is valid on submit
     if form.validate_on_submit():
         email    = request.form.get('email', '', type=str).lower()
         password = request.form.get('password', '', type=str) 
-
         user = User.query.filter_by(email=email).first()
         if user:
             #if bc.check_password_hash(user.password, password):
@@ -83,7 +82,9 @@ def login():
 
     return render_template('layouts/auth-default.html',
                             content=render_template( 'pages/login.html', form=form, msg=msg ) )
-    
+
+
+   
 @app.route('/update', methods = ['GET', 'POST'])
 def update():
     form = ProfileUpdateForm(request.form)
@@ -110,11 +111,35 @@ def update():
                             content=render_template( 'pages/profile.html', form=form, msg=msg, error= error ) )
     
 
+
+@app.route('/detect-diabetes', methods=[ "POST" ])
+def detectDiabetes():
+    form  = DetectDiabetesForm(request.form)
+    msg   = None
+    result = None
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    print(request.form.get('pregnancies'))
+    if form.validate_on_submit():
+        data = []
+        data.append(request.form.get('pregnancies'))
+        data.append(request.form.get('glucose'))
+        data.append(request.form.get('bloodPressure'))
+        data.append(request.form.get('skinThickness'))
+        data.append(request.form.get('insulin'))
+        data.append(request.form.get('bmi'))
+        data.append(float(request.form.get('pedigreeFunction')))
+        data.append(request.form.get('age'))
+        result = check(base_dir, data)   
+    return render_template('layouts/default.html',
+                                content=render_template( 'pages/detect-diabetes.html', form = form, msg= msg, result =result))
+    
+
+
+
 # App main route + generic routing
 @app.route('/', defaults={'path': 'detect-diabetes.html'})
 @app.route('/<path>')
 def index(path):
-
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 

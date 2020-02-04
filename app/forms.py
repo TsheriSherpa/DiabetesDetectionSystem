@@ -4,13 +4,13 @@ from wtforms            import StringField, TextAreaField, SubmitField, Password
 from wtforms.validators import InputRequired, Email, DataRequired
 
 class LoginForm(FlaskForm):
-	email    = StringField  (u'Email'  , validators=[DataRequired()])
+	email       = StringField  (u'Email'     , validators=[DataRequired()])
 	password    = PasswordField(u'Password'  , validators=[DataRequired()])
 
 class RegisterForm(FlaskForm):
-	password            = PasswordField(u'Password'  , validators=[DataRequired()])
+	password            = PasswordField(u'Password'          , validators=[DataRequired()])
 	confirm_password    = PasswordField(u'confirm-password'  , validators=[DataRequired()])
-	email               = StringField  (u'Email'     , validators=[DataRequired(), Email()])
+	email               = StringField  (u'Email'             , validators=[DataRequired(), Email()])
 
 class ProfileUpdateForm(FlaskForm):
     phone       = StringField  (u'phone'      ,  validators=[DataRequired()])
@@ -21,3 +21,14 @@ class ProfileUpdateForm(FlaskForm):
     firstname   = StringField  (u'firstname'  ,  validators=[DataRequired()]) 
     lastname    = StringField  (u'lastname'   ,  validators=[DataRequired()]) 
     city        = StringField  (u'city'       ,  validators=[DataRequired()]) 
+
+class DetectDiabetesForm(FlaskForm):
+    pregnancies      = StringField  (u'pregnancies'      , validators=[DataRequired()])
+    glucose          = StringField  (u'glucose'          , validators=[DataRequired()])
+    bloodPressure    = StringField  (u'bloodPressure'    , validators=[DataRequired()])
+    skinThickness    = StringField  (u'skinThickness'    , validators=[DataRequired()])
+    insulin          = StringField  (u'insulin'          , validators=[DataRequired()])
+    bmi              = StringField  (u'bmi'              , validators=[DataRequired()])
+    pedigreeFunction = StringField  (u'pedigreeFunction' , validators=[DataRequired()])
+    age              = StringField  (u'age'              , validators=[DataRequired()])
+    

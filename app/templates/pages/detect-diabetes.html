@@ -33,69 +33,88 @@
 	<!-- Page content -->
 	<div class="container-fluid mt-7 mr-8">
 		<!-- Table -->
-		<div class="row">
-			<div class="col-lg-5">
-				<div class="form-group">
-					<label class="form-control-label" for="pregnancies">Pregnancies</label>
-					<input type="number" id="pregnancies"
-						class="form-control form-control-alternative" placeholder="Number of times pregnant">
+		<form method="POST" action="{{url_for('detectDiabetes')}}">
+			{{ form.hidden_tag() }}
+			<div class="text-muted text-center mt-2 mb-3">
+				{% if form is defined %}
+					{% for error in form.errors %}
+						<div class="alert alert-danger" id="alert" style="font-weight: bold;">{{ error+ " = "+ form.errors[error] | safe }}</div>
+						<br>
+					{% endfor %}
+				{% endif %}
+			</div>
+			<div class="text-muted text-center mt-2 mb-3">
+				{% if msg %}
+					<div class="alert alert-success" role ="alert" id ="alert" style="font-weight: bold;">{{ msg | safe }}</div>
+				{% endif %}
+				{% if result %}
+					<div class="alert alert-success" role ="alert" id ="alert" style="font-weight: bold;">{{ result | safe }}</div>
+				{% endif %}
+			</div>
+			<div class="row">
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="pregnancies">Pregnancies</label>
+						<input type="number" id="pregnancies"
+							class="form-control form-control-alternative" placeholder="Number of times pregnant">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="glucose">Glucose</label>
+						<input type="number" id="glucose"
+							class="form-control form-control-alternative" placeholder="Plasma glucose concentration a 2 hours in an oral glucose tolerance test">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="bloodPressure">Blood Pressure
+						</label>
+						<input type="number" id="bloodPressure"
+							class="form-control form-control-alternative" placeholder="Diastolic blood pressure (mm Hg)">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="skinThickness">Skin Thickness</label>
+						<input type="number" id="skinThickness"
+							class="form-control form-control-alternative" placeholder="Triceps skin fold thickness (mm)">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="insulin">Insulin</label>
+						<input type="number" id="insulin"
+							class="form-control form-control-alternative" placeholder="2-Hour serum insulin (mu U/ml)">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="bmi">BMI</label>
+						<input type="number" id="bmi"
+							class="form-control form-control-alternative" placeholder="Body mass index (weight in kg/(height in m)^2)">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="pedigreeFunction">Diabetes Pedigree Function</label>
+						<input type="text" step=".02" id="pedigreeFunction"
+							class="form-control form-control-alternative" placeholder="Diabetes pedigree function" required="true">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="age">Age</label>
+						<input type="number" id="age"
+							class="form-control form-control-alternative" placeholder="Age" required="true">
+					</div>
+				</div>
+				<div class="col-10 text-center">
+					<input type="submit" class="btn btn-lg btn-primary" style="width: 300px; margin-left:8%" value ="Detect">
 				</div>
 			</div>
-			<div class="col-lg-5">
-				<div class="form-group">
-					<label class="form-control-label" for="glucose">Glucose</label>
-					<input type="number" id="glucose"
-						class="form-control form-control-alternative" placeholder="Plasma glucose concentration a 2 hours in an oral glucose tolerance test">
-				</div>
-			</div>
-			<div class="col-lg-5">
-				<div class="form-group">
-					<label class="form-control-label" for="bloodPressure">Blood Pressure
-					</label>
-					<input type="number" id="bloodPressure"
-						class="form-control form-control-alternative" placeholder="Diastolic blood pressure (mm Hg)">
-				</div>
-			</div>
-			<div class="col-lg-5">
-				<div class="form-group">
-					<label class="form-control-label" for="skinThickness">Skin Thickness</label>
-					<input type="number" id="skinThickness"
-						class="form-control form-control-alternative" placeholder="Triceps skin fold thickness (mm)">
-				</div>
-			</div>
-			<div class="col-lg-5">
-				<div class="form-group">
-					<label class="form-control-label" for="insulin">Insulin</label>
-					<input type="number" id="insulin"
-						class="form-control form-control-alternative" placeholder="2-Hour serum insulin (mu U/ml)">
-				</div>
-			</div>
-			<div class="col-lg-5">
-				<div class="form-group">
-					<label class="form-control-label" for="bmi">BMI</label>
-					<input type="number" id="bmi"
-						class="form-control form-control-alternative" placeholder="Body mass index (weight in kg/(height in m)^2)">
-				</div>
-			</div>
-			<div class="col-lg-5">
-				<div class="form-group">
-					<label class="form-control-label" for="pedigreeFunction">Diabetes Pedigree Function</label>
-					<input type="number" id="pedigreeFunction"
-						class="form-control form-control-alternative" placeholder="Diabetes pedigree function" required="true">
-				</div>
-			</div>
-			<div class="col-lg-5">
-				<div class="form-group">
-					<label class="form-control-label" for="age">Age</label>
-					<input type="number" id="age"
-						class="form-control form-control-alternative" placeholder="Age" required="true">
-				</div>
-			</div>
-			<div class="col-10 text-center">
-				<a href="#!" class="btn btn-lg btn-primary" style="width: 300px; margin-left:8%">Detect</a>
-			</div>
-		</div>
+		</form>
 		{% include 'includes/footer.html' %}
-
+		
 	</div>
 </div>
