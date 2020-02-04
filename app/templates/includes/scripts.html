@@ -6,4 +6,8 @@
   <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
   <!-- Argon JS -->
   <script src="/static/assets/js/argon.js?v=1.0.0"></script>
-
+  <script>
+    $("#alert").fadeTo(2000, 500).slideUp(500, function(){
+        $("#success-alert").alert('close');
+    });
+  </script>

@@ -1,9 +1,3 @@
-# -*- encoding: utf-8 -*-
-"""
-License: MIT
-Copyright (c) 2019 - present AppSeed.us
-"""
-
 # Python modules
 import os, logging 
 
@@ -15,7 +9,7 @@ from werkzeug.exceptions import HTTPException, NotFound, abort
 # App modules
 from app        import app, lm, db, bc
 from app.models import User
-from app.forms  import LoginForm, RegisterForm
+from app.forms  import LoginForm, RegisterForm, ProfileUpdateForm
 
 # provide login manager with load_user callback
 @lm.user_loader
@@ -31,44 +25,30 @@ def logout():
 # Register a new user
 @app.route('/register.html', methods=['GET', 'POST'])
 def register():
-    
-    # declare the Registration Form
     form = RegisterForm(request.form)
-
     msg = None
 
     if request.method == 'GET': 
-
         return render_template('layouts/auth-default.html',
                                 content=render_template( 'pages/register.html', form=form, msg=msg ) )
 
     # check if both http method is POST and form is valid on submit
     if form.validate_on_submit():
-
-        # assign form data to variables
-        username = request.form.get('username', '', type=str)
-        password = request.form.get('password', '', type=str) 
-        email    = request.form.get('email'   , '', type=str) 
-
-        # filter User out of database through username
-        user = User.query.filter_by(user=username).first()
-
-        # filter User out of database through username
-        user_by_email = User.query.filter_by(email=email).first()
-
-        if user or user_by_email:
-            msg = 'Error: User exists!'
+        password        = request.form.get('password', '', type=str) 
+        email           = request.form.get('email'   , '', type=str).lower()
+        confirmPassword = request.form.get('confirm_password', '', type=str)
+        user_by_email   = User.query.filter_by(email=email).first()
         
-        else:         
-
-            pw_hash = password #bc.generate_password_hash(password)
-
-            user = User(username, email, pw_hash)
-
-            user.save()
-
-            msg = 'User created, please <a href="' + url_for('login') + '">login</a>'     
-
+        if confirmPassword == password:
+            if user_by_email:
+                msg = 'Error: User exists!'
+            else:         
+                pw_hash = password #bc.generate_password_hash(password)
+                user = User(email, pw_hash)
+                user.save()
+                msg = 'User created, please <a href="' + url_for('login') + '">login</a>'
+        else:
+            msg = "Error: Password do not match."     
     else:
         msg = 'Input error'     
 
@@ -87,16 +67,11 @@ def login():
 
     # check if both http method is POST and form is valid on submit
     if form.validate_on_submit():
-
-        # assign form data to variables
-        username = request.form.get('username', '', type=str)
+        email    = request.form.get('email', '', type=str).lower()
         password = request.form.get('password', '', type=str) 
 
-        # filter User out of database through username
-        user = User.query.filter_by(user=username).first()
-
+        user = User.query.filter_by(email=email).first()
         if user:
-            
             #if bc.check_password_hash(user.password, password):
             if user.password == password:
                 login_user(user)
@@ -104,27 +79,54 @@ def login():
             else:
                 msg = "Wrong password. Please try again."
         else:
-            msg = "Unkkown user"
+            msg = "Unknown user"
 
     return render_template('layouts/auth-default.html',
                             content=render_template( 'pages/login.html', form=form, msg=msg ) )
+    
+@app.route('/update', methods = ['GET', 'POST'])
+def update():
+    form = ProfileUpdateForm(request.form)
+    msg = None
+    error = None
+    if form.validate_on_submit():
+        email = request.form.get('email', '', type=str).lower()
+        user = User.query.filter_by(email=email).first()        
+        if user:
+            user.firstname     = request.form.get('firstname',   '',  type=str)
+            user.lastname      = request.form.get('lastname',    '',  type=str)
+            user.address       = request.form.get('address',     '',  type=str)
+            user.email         = request.form.get('email',       '',  type=str)
+            user.country       = request.form.get('country',     '',  type=str)
+            user.description   = request.form.get('description', '',  type=str)
+            user.city          = request.form.get('city',        '',  type=str)
+            user.phone         = request.form.get('phone',       '',  type=str)
+            db.session.commit()
+            msg = "Successfully Updated."
+        else:
+            error = "Error while updating."  
+            
+    return render_template('layouts/default.html',
+                            content=render_template( 'pages/profile.html', form=form, msg=msg, error= error ) )
+    
 
 # App main route + generic routing
-@app.route('/', defaults={'path': 'index.html'})
+@app.route('/', defaults={'path': 'detect-diabetes.html'})
 @app.route('/<path>')
 def index(path):
 
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
-    content = None
-
     try:
-
+        form = ProfileUpdateForm(request.form)
+        msg= None
+        error = None
         # try to match the pages defined in -> pages/<input file>
         return render_template('layouts/default.html',
-                                content=render_template( 'pages/'+path) )
-    except:
-        
+                                content=render_template( 'pages/'+path, form = form, msg= msg, error =error))
+    except Exception:
+
         return render_template('layouts/auth-default.html',
                                 content=render_template( 'pages/404.html' ) )
+        
