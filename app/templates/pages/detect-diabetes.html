@@ -35,34 +35,36 @@
 		<!-- Table -->
 		<form method="POST" action="{{url_for('detectDiabetes')}}">
 			{{ form.hidden_tag() }}
-			<div class="text-muted text-center mt-2 mb-3">
-				{% if form is defined %}
+			{% if form.errors%}
+				<div class="text-muted text-center mt-2 mb-3" id="alert">
 					{% for error in form.errors %}
-						<div class="alert alert-danger" id="alert" style="font-weight: bold;">{{ error+ " = "+ form.errors[error] | safe }}</div>
+						<div class="alert alert-danger"  style="font-weight: bold;">{{ error+ " = "+ form.errors[error] | safe }}</div>
 						<br>
 					{% endfor %}
-				{% endif %}
 			</div>
-			<div class="text-muted text-center mt-2 mb-3">
+			{% endif %}
+			<div class="text-muted text-center mt-2 mb-3" id ="alert">
 				{% if msg %}
-					<div class="alert alert-success" role ="alert" id ="alert" style="font-weight: bold;">{{ msg | safe }}</div>
+					<div class="alert alert-success" role ="alert" id='alert' style="font-weight: bold;">{{ msg | safe }}</div>
 				{% endif %}
-				{% if result %}
-					<div class="alert alert-success" role ="alert" id ="alert" style="font-weight: bold;">{{ result | safe }}</div>
+				{% if knnResult %}
+					<div class="alert alert-success" role ="alert" id ="alert" style="font-weight: bold; color:black; text-align:center">KNN Prediction : {{ knnResult | safe }}<br>
+						Niave Bayes Prediction : {{ navieBayesResult | safe}}
+					</div>
 				{% endif %}
 			</div>
 			<div class="row">
 				<div class="col-lg-5">
 					<div class="form-group">
 						<label class="form-control-label" for="pregnancies">Pregnancies</label>
-						<input type="number" id="pregnancies"
+						<input type="number"  step ='any' name="pregnancies" required='true'
 							class="form-control form-control-alternative" placeholder="Number of times pregnant">
 					</div>
 				</div>
 				<div class="col-lg-5">
 					<div class="form-group">
 						<label class="form-control-label" for="glucose">Glucose</label>
-						<input type="number" id="glucose"
+						<input type="number" step ='any' name="glucose" required='true'
 							class="form-control form-control-alternative" placeholder="Plasma glucose concentration a 2 hours in an oral glucose tolerance test">
 					</div>
 				</div>
@@ -70,42 +72,42 @@
 					<div class="form-group">
 						<label class="form-control-label" for="bloodPressure">Blood Pressure
 						</label>
-						<input type="number" id="bloodPressure"
+						<input type="number" step ='any' name="bloodPressure" required='true'
 							class="form-control form-control-alternative" placeholder="Diastolic blood pressure (mm Hg)">
 					</div>
 				</div>
 				<div class="col-lg-5">
 					<div class="form-group">
 						<label class="form-control-label" for="skinThickness">Skin Thickness</label>
-						<input type="number" id="skinThickness"
+						<input type="number" step ='any' name="skinThickness" required='true'
 							class="form-control form-control-alternative" placeholder="Triceps skin fold thickness (mm)">
 					</div>
 				</div>
 				<div class="col-lg-5">
 					<div class="form-group">
 						<label class="form-control-label" for="insulin">Insulin</label>
-						<input type="number" id="insulin"
+						<input type="number" step ='any' name="insulin" required='true'
 							class="form-control form-control-alternative" placeholder="2-Hour serum insulin (mu U/ml)">
 					</div>
 				</div>
 				<div class="col-lg-5">
 					<div class="form-group">
 						<label class="form-control-label" for="bmi">BMI</label>
-						<input type="number" id="bmi"
+						<input type="number" step ='any' name="bmi" required='true'
 							class="form-control form-control-alternative" placeholder="Body mass index (weight in kg/(height in m)^2)">
 					</div>
 				</div>
 				<div class="col-lg-5">
 					<div class="form-group">
 						<label class="form-control-label" for="pedigreeFunction">Diabetes Pedigree Function</label>
-						<input type="text" step=".02" id="pedigreeFunction"
-							class="form-control form-control-alternative" placeholder="Diabetes pedigree function" required="true">
+						<input type="number" step ='any' name="pedigreeFunction" required='true'
+							class="form-control form-control-alternative" placeholder="Diabetes pedigree function">
 					</div>
 				</div>
 				<div class="col-lg-5">
 					<div class="form-group">
 						<label class="form-control-label" for="age">Age</label>
-						<input type="number" id="age"
+						<input type="number" step ='any' name="age"
 							class="form-control form-control-alternative" placeholder="Age" required="true">
 					</div>
 				</div>

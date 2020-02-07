@@ -92,14 +92,14 @@
                     <div class="card-body">
                         <form method="POST" action="{{url_for('update')}}">
                             {{ form.hidden_tag() }}
-                            <div class="text-muted text-center mt-2 mb-3">
-                                {% if form is defined %}
+                            {% if form.errors%}
+                                <div class="text-muted text-center mt-2 mb-3">
                                     {% for error in form.errors %}
                                         <div class="alert alert-danger" id="alert" style="font-weight: bold;">{{ error+ " = "+ form.errors[error] | safe }}</div>
                                         <br>
                                     {% endfor %}
-                                {% endif %}
-                            </div>
+                                </div>
+                            {% endif %}
                             <div class="text-muted text-center mt-2 mb-3">
                                 {% if msg %}
                                     <div class="alert alert-success" role ="alert" id ="alert" style="font-weight: bold;">{{ msg | safe }}</div>

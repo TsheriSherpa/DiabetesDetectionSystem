@@ -10,7 +10,7 @@ from werkzeug.exceptions import HTTPException, NotFound, abort
 from app        import app, lm, db, bc
 from app.models import User
 from app.forms  import LoginForm, RegisterForm, ProfileUpdateForm, DetectDiabetesForm
-from app.test   import check
+from app.test   import checkUsingKNN, checkUsingNaiveBayes
 
 # provide login manager with load_user callback
 @lm.user_loader
@@ -37,8 +37,8 @@ def register():
 
     # check if both http method is POST and form is valid on submit
     if form.validate_on_submit():
-        password        = request.form.get('password', '', type=str) 
-        email           = request.form.get('email'   , '', type=str).lower()
+        password        = request.form.get('password',         '', type=str) 
+        email           = request.form.get('email'   ,         '', type=str).lower()
         confirmPassword = request.form.get('confirm_password', '', type=str)
         user_by_email   = User.query.filter_by(email=email).first()
         
@@ -116,28 +116,46 @@ def update():
 def detectDiabetes():
     form  = DetectDiabetesForm(request.form)
     msg   = None
-    result = None
+    navieBayesResult = None
+    knnResult = None
     base_dir = os.path.abspath(os.path.dirname(__file__))
-    print(request.form.get('pregnancies'))
     if form.validate_on_submit():
         data = []
-        data.append(request.form.get('pregnancies'))
-        data.append(request.form.get('glucose'))
-        data.append(request.form.get('bloodPressure'))
-        data.append(request.form.get('skinThickness'))
-        data.append(request.form.get('insulin'))
-        data.append(request.form.get('bmi'))
+        data.append(int(request.form.get('pregnancies')))
+        data.append(int(request.form.get('glucose')))
+        data.append(int(request.form.get('bloodPressure')))
+        data.append(int(request.form.get('skinThickness')))
+        data.append(int(request.form.get('insulin')))
+        data.append(float(request.form.get('bmi')))
         data.append(float(request.form.get('pedigreeFunction')))
-        data.append(request.form.get('age'))
-        result = check(base_dir, data)   
-    return render_template('layouts/default.html',
-                                content=render_template( 'pages/detect-diabetes.html', form = form, msg= msg, result =result))
+        data.append(int(request.form.get('age')))
+        knnResult = checkUsingKNN(base_dir, data)        
+        navieBayesResult = checkUsingNaiveBayes(base_dir, data)
+    return redirect(url_for('detectDiabetesPage', msg=msg, 
+                            knnResult=knnResult, 
+                            navieBayesResult=navieBayesResult ))
+    # return render_template('layouts/default.html',
+    #                             content=render_template( 'pages/detect-diabetes.html', form = form, msg= msg, result =result))
     
 
 
+@app.route('/detect-diabetes.html', methods=["GET", "POST"])
+def detectDiabetesPage():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    msg = request.args.get('msg')
+    knnResult = request.args.get('knnResult')
+    navieBayesResult = request.args.get('navieBayesResult')
+    form  = ProfileUpdateForm(request.form) 
+    
+    return render_template('layouts/default.html', 
+                           content = render_template('pages/detect-diabetes.html', 
+                           form=form, msg=msg, knnResult=knnResult, 
+                           navieBayesResult=navieBayesResult))
+    
 
 # App main route + generic routing
-@app.route('/', defaults={'path': 'detect-diabetes.html'})
+@app.route('/', defaults={'path': 'detect-diabetes.html'}, methods=["GET", "POST"])
 @app.route('/<path>')
 def index(path):
     if not current_user.is_authenticated:
@@ -145,7 +163,7 @@ def index(path):
 
     try:
         form = ProfileUpdateForm(request.form)
-        msg= None
+        msg = None
         error = None
         # try to match the pages defined in -> pages/<input file>
         return render_template('layouts/default.html',
