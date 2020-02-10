@@ -10,7 +10,7 @@ from werkzeug.exceptions import HTTPException, NotFound, abort
 from app        import app, lm, db, bc
 from app.models import User
 from app.forms  import LoginForm, RegisterForm, ProfileUpdateForm, DetectDiabetesForm
-from app.test   import checkUsingKNN, checkUsingNaiveBayes
+from app.test   import checkUsingKNN, checkUsingNaiveBayes, checkUsingDT
 
 # provide login manager with load_user callback
 @lm.user_loader
@@ -131,9 +131,11 @@ def detectDiabetes():
         data.append(int(request.form.get('age')))
         knnResult = checkUsingKNN(base_dir, data)        
         navieBayesResult = checkUsingNaiveBayes(base_dir, data)
+        decisionTreeResult = checkUsingDT(base_dir, data)
     return redirect(url_for('detectDiabetesPage', msg=msg, 
                             knnResult=knnResult, 
-                            navieBayesResult=navieBayesResult ))
+                            navieBayesResult=navieBayesResult,
+                            decisionTreeResult=decisionTreeResult ))
     # return render_template('layouts/default.html',
     #                             content=render_template( 'pages/detect-diabetes.html', form = form, msg= msg, result =result))
     
@@ -146,12 +148,14 @@ def detectDiabetesPage():
     msg = request.args.get('msg')
     knnResult = request.args.get('knnResult')
     navieBayesResult = request.args.get('navieBayesResult')
+    decisionTreeResult = request.args.get('decisionTreeResult')
     form  = ProfileUpdateForm(request.form) 
     
     return render_template('layouts/default.html', 
                            content = render_template('pages/detect-diabetes.html', 
                            form=form, msg=msg, knnResult=knnResult, 
-                           navieBayesResult=navieBayesResult))
+                           navieBayesResult=navieBayesResult,
+                           decisionTreeResult=decisionTreeResult))
     
 
 # App main route + generic routing
