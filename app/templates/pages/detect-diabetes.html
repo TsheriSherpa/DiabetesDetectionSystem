@@ -47,9 +47,10 @@
 				{% if msg %}
 					<div class="alert alert-success" role ="alert" id='alert' style="font-weight: bold;">{{ msg | safe }}</div>
 				{% endif %}
+				{{ dtResult }}
 				{% if knnResult %}
 					<div class="alert alert-success" role ="alert" id ="alert" style="font-weight: bold; color:black; text-align:center">KNN Prediction : {{ knnResult | safe }}<br>
-						Niave Bayes Prediction : {{ navieBayesResult | safe}}
+						Niave Bayes Prediction : {{ navieBayesResult | safe}} <br> Decision Tree Prediction : {{ dtResult }}
 					</div>
 				{% endif %}
 			</div>

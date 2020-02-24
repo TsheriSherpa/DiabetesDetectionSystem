@@ -3,6 +3,8 @@ from flask_login import UserMixin
 
 class User(UserMixin, db.Model):
 
+    __tablename__ = 'users'
+
     id          = db.Column(db.Integer,     primary_key=True)
     email       = db.Column(db.String(120), unique = True)
     phone       = db.Column(db.String(15))
@@ -29,10 +31,7 @@ class User(UserMixin, db.Model):
         return '<User %r - %s>' % (self.id) % (self.email)
 
     def save(self):
-
-        # inject self into db session    
-        db.session.add (self)
-        # commit change and save the object
-        db.session.commit( )
-
-        return self 
+        db.session.add(self)
+        db.session.commit()
+        
+        return self

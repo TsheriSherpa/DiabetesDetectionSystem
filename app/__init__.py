@@ -11,11 +11,13 @@ app = Flask(__name__)
 
 app.config.from_object('app.configuration.Config')
 
-db = SQLAlchemy  (app) # flask-sqlalchemy
+# db = SQLAlchemy  (app) # flask-sqlalchemy
 bc = Bcrypt      (app) # flask-bcrypt
 
 lm = LoginManager(   ) # flask-loginmanager
 lm.init_app(app) # init the login manager
+
+db  = SQLAlchemy (app)
 
 # Setup database
 @app.before_first_request

@@ -1,18 +1,18 @@
 
 def checkUsingKNN(base_dir, data:list):
     import pickle
-    import pandas as pd
-    from sklearn.model_selection import train_test_split
-    from sklearn.neighbors import KNeighborsClassifier 
+    # import pandas as pd
+    # from sklearn.model_selection import train_test_split
+    # from sklearn.neighbors import KNeighborsClassifier 
     
     
-    diabetes = pd.read_csv(base_dir+'/../diabetesModel/diabetes.csv')   #importing dataset.
-    X_train, X_test, y_train, y_test = train_test_split(
-        diabetes.loc[:, diabetes.columns != 'Outcome'], 
-        diabetes['Outcome'], 
-        stratify=diabetes['Outcome'],
-        random_state=66
-    )
+    # diabetes = pd.read_csv(base_dir+'/../diabetesModel/diabetes.csv')   #importing dataset.
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     diabetes.loc[:, diabetes.columns != 'Outcome'], 
+    #     diabetes['Outcome'], 
+    #     stratify=diabetes['Outcome'],
+    #     random_state=66
+    # )
 
     # training_accuracy = []
     # test_accuracy = []
@@ -35,35 +35,35 @@ def checkUsingKNN(base_dir, data:list):
     print("model imported")
     # result = loaded_model.score(X_test,y_test)
     result = str((loaded_model.predict([data]))[0])
-    print('The result is '+str(result))
+    print('The result for knn is '+str(result))
     return 'Positive' if result == '1' else 'Negative'
 
 
 
 def checkUsingNaiveBayes(base_dir, data:list):
     import pickle
-    import pandas as pd
-    from sklearn.naive_bayes import GaussianNB 
-    from sklearn.metrics import accuracy_score 
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.model_selection import train_test_split
+    # import pandas as pd
+    # from sklearn.naive_bayes import GaussianNB 
+    # from sklearn.metrics import accuracy_score 
+    # from sklearn.preprocessing import StandardScaler
+    # from sklearn.model_selection import train_test_split
     
     
-    diabetes = pd.read_csv(base_dir+'/../diabetesModel/diabetes.csv')   #importing dataset.
-    X_train, X_test, y_train, y_test = train_test_split(
-        diabetes.loc[:, diabetes.columns != 'Outcome'], 
-        diabetes['Outcome'], 
-        stratify=diabetes['Outcome'],
-        random_state=66
-    )
-    naiveBayes = GaussianNB()
-    naiveBayes.fit(X_train, y_train)
+    # diabetes = pd.read_csv(base_dir+'/../diabetesModel/diabetes.csv')   #importing dataset.
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     diabetes.loc[:, diabetes.columns != 'Outcome'], 
+    #     diabetes['Outcome'], 
+    #     stratify=diabetes['Outcome'],
+    #     random_state=66
+    # )
+    # naiveBayes = GaussianNB()
+    # naiveBayes.fit(X_train, y_train)
     # pickle.dump(naiveBayes, open(base_dir + '/../diabetesModel/naiveBayesModel','wb'))
     loaded_model = pickle.load(open(base_dir + '/../diabetesModel/naiveBayesModel', 'rb'))
     print("model imported")
     # result = loaded_model.score(X_test,y_test)
     result = str((loaded_model.predict([data]))[0])
-    print('The result is ' + result)
+    print('The result for naive bayes is ' + result)
     return 'Positive' if result == '1' else 'Negative'
 
 
@@ -74,20 +74,23 @@ def checkUsingDT(base_dir, data:list):
     from sklearn.model_selection import train_test_split
     
     
-    diabetes = pd.read_csv(base_dir+'/../diabetesModel/diabetes.csv') 
-    tree = DecisionTreeClassifier(max_depth=3, random_state=0)
-    X_train, X_test, y_train, y_test = train_test_split(
-                                                diabetes.loc[:, diabetes.columns != 'Outcome'],
-                                                diabetes['Outcome'], stratify=diabetes['Outcome'],
-                                                random_state=66)
-    tree.fit(X_train, y_train)
-    # pickle.dump(naiveBayes, open(base_dir + '/../diabetesModel/decisionTreeModel','wb'))
+    # diabetes = pd.read_csv(base_dir+'/../diabetesModel/diabetes.csv') 
+    # tree = DecisionTreeClassifier(max_depth=3, random_state=66)
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #                                             diabetes.loc[:, diabetes.columns != 'Outcome'],
+    #                                             diabetes['Outcome'], stratify=diabetes['Outcome'],
+    #                                             random_state=66)
+    # tree.fit(X_train, y_train)
+    # pickle.dump(tree, open(base_dir + '/../diabetesModel/decisionTreeModel','wb'))
     loaded_model = pickle.load(open(base_dir + '/../diabetesModel/decisionTreeModel', 'rb'))
     print("model imported")
     # result = loaded_model.score(X_test,y_test)
     result = str((loaded_model.predict([data]))[0])
-    print('The result is ' + result)
-    return 'Positive' if result == '1' else 'Negative'
+    print('The result for decision tree is ' + result)
+    if result == "1":
+        return "Positive"
+    else:
+        return "Negative"
     
     
 # def importModules():
