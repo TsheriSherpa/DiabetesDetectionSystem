@@ -5,6 +5,7 @@ import os, logging
 from flask               import render_template, request, url_for, redirect, send_from_directory
 from flask_login         import login_user, logout_user, current_user, login_required
 from werkzeug.exceptions import HTTPException, NotFound, abort
+from app                 import api
 
 # App modules
 from app        import app, lm, db, bc
@@ -46,7 +47,7 @@ def register():
             if user_by_email:
                 msg = 'Error: User exists!'
             else:         
-                pw_hash = password #bc.generate_password_hash(password)
+                pw_hash = bc.generate_password_hash(password)
                 user = User(email, pw_hash)
                 user.save()
                 msg = 'User created, please <a href="' + url_for('login') + '">login</a>'
@@ -60,7 +61,6 @@ def register():
                             form=form, msg=msg ) )
 
 
-
 # Authenticate user
 @app.route('/login.html', methods=['GET', 'POST'])
 def login():
@@ -71,8 +71,7 @@ def login():
         password = request.form.get('password', '', type=str) 
         user = User.query.filter_by(email=email).first()
         if user:
-            #if bc.check_password_hash(user.password, password):
-            if user.password == password:
+            if bc.check_password_hash(user.password, password):
                 login_user(user)
                 return redirect(url_for('index'))
             else:
@@ -82,7 +81,6 @@ def login():
 
     return render_template('layouts/auth-default.html',
                             content=render_template( 'pages/login.html', form=form, msg=msg ) )
-
 
    
 @app.route('/update', methods = ['GET', 'POST'])
@@ -132,12 +130,10 @@ def detectDiabetes():
         knnResult = checkUsingKNN(base_dir, data)        
         navieBayesResult = checkUsingNaiveBayes(base_dir, data)
         decisionTreeResult = checkUsingDT(base_dir, data)
+        
     return redirect(url_for('detectDiabetesPage', msg=msg, 
                             knnResult=knnResult, 
                             navieBayesResult=navieBayesResult, dtResult= decisionTreeResult ))
-    # return render_template('layouts/default.html',
-    #                             content=render_template( 'pages/detect-diabetes.html', form = form, msg= msg, result =result))
-    
 
 
 @app.route('/detect-diabetes.html', methods=["GET", "POST"])
@@ -161,16 +157,15 @@ def detectDiabetesPage():
 def index(path):
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-
+    
     try:
         form = ProfileUpdateForm(request.form)
         msg = None
         error = None
-        # try to match the pages defined in -> pages/<input file>
         return render_template('layouts/default.html',
-                                content=render_template( 'pages/'+path, form = form, msg= msg, error =error))
+                                content=render_template( 'pages/'+path, form = form,
+                                                         msg= msg, error =error))
     except Exception:
-
         return render_template('layouts/auth-default.html',
                                 content=render_template( 'pages/404.html' ) )
         
