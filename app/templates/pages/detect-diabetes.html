@@ -1,0 +1,123 @@
+<div class="main-content">
+	<!-- Top navbar -->
+	<nav class="navbar navbar-top navbar-expand-md navbar-dark" id="navbar-main">
+		<div class="container-fluid">
+			<!-- Brand -->
+			<a class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" href="/icons.html" style="font-size: large;">
+				Detect Diabetes</a>
+			<!-- Form -->
+			<form class="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
+				<div class="form-group mb-0">
+					<div class="input-group input-group-alternative">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-search"></i></span>
+						</div>
+						<input class="form-control" placeholder="Search" type="text">
+					</div>
+				</div>
+			</form>
+			<!-- User -->
+			{% include 'includes/user-dropdown.html' %}
+
+		</div>
+	</nav>
+	<!-- Header -->
+	<div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+		<div class="container-fluid">
+			<div class="header-body">
+				<p style="font-size: 20px; color:wheat">You are one click away from Detecting Diabetes using machine learning. <br> 
+				Fill the form below with precise data inorder to diagnose diabetes. </p>
+			</div>
+		</div>
+	</div>
+	<!-- Page content -->
+	<div class="container-fluid mt-7 mr-8">
+		<!-- Table -->
+		<form method="POST" action="{{url_for('detectDiabetes')}}">
+			{{ form.hidden_tag() }}
+			{% if form.errors%}
+				<div class="text-muted text-center mt-2 mb-3" id="alert">
+					{% for error in form.errors %}
+						<div class="alert alert-danger"  style="font-weight: bold;">{{ error+ " = "+ form.errors[error] | safe }}</div>
+						<br>
+					{% endfor %}
+			</div>
+			{% endif %}
+			<div class="text-muted text-center mt-2 mb-3" id ="alert">
+				{% if msg %}
+					<div class="alert alert-success" role ="alert" id='alert' style="font-weight: bold;">{{ msg | safe }}</div>
+				{% endif %}
+				{{ dtResult }}
+				{% if knnResult %}
+					<div class="alert alert-success" role ="alert" id ="alert" style="font-weight: bold; color:black; text-align:center">KNN Prediction : {{ knnResult | safe }}<br>
+						Niave Bayes Prediction : {{ navieBayesResult | safe}} <br> Decision Tree Prediction : {{ decisionTreeResult | safe}}
+					</div>
+				{% endif %}
+			</div>
+			<div class="row">
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="pregnancies">Pregnancies</label>
+						<input type="number"  step ='any' name="pregnancies" required='true'
+							class="form-control form-control-alternative" placeholder="Number of times pregnant">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="glucose">Glucose</label>
+						<input type="number" step ='any' name="glucose" required='true'
+							class="form-control form-control-alternative" placeholder="Plasma glucose concentration a 2 hours in an oral glucose tolerance test">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="bloodPressure">Blood Pressure
+						</label>
+						<input type="number" step ='any' name="bloodPressure" required='true'
+							class="form-control form-control-alternative" placeholder="Diastolic blood pressure (mm Hg)">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="skinThickness">Skin Thickness</label>
+						<input type="number" step ='any' name="skinThickness" required='true'
+							class="form-control form-control-alternative" placeholder="Triceps skin fold thickness (mm)">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="insulin">Insulin</label>
+						<input type="number" step ='any' name="insulin" required='true'
+							class="form-control form-control-alternative" placeholder="2-Hour serum insulin (mu U/ml)">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="bmi">BMI</label>
+						<input type="number" step ='any' name="bmi" required='true'
+							class="form-control form-control-alternative" placeholder="Body mass index (weight in kg/(height in m)^2)">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="pedigreeFunction">Diabetes Pedigree Function</label>
+						<input type="number" step ='any' name="pedigreeFunction" required='true'
+							class="form-control form-control-alternative" placeholder="Diabetes pedigree function">
+					</div>
+				</div>
+				<div class="col-lg-5">
+					<div class="form-group">
+						<label class="form-control-label" for="age">Age</label>
+						<input type="number" step ='any' name="age"
+							class="form-control form-control-alternative" placeholder="Age" required="true">
+					</div>
+				</div>
+				<div class="col-10 text-center">
+					<input type="submit" class="btn btn-lg btn-primary" style="width: 300px; margin-left:8%" value ="Detect">
+				</div>
+			</div>
+		</form>
+		{% include 'includes/footer.html' %}
+		
+	</div>
+</div>

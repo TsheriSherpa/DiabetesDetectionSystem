@@ -16,11 +16,15 @@ $(function() {
     });
 
     // Update the Sales cell
-    $.getJSON('/api/stats/sales', function( data ) { 
-        //console.log( ' -> ' + data['traffic'] ) 
-        $('#stats_sales').html( data['sales'] );
-    });
+    // $.getJSON('/api/stats/sales', function( data ) { 
+    //     console.log( ' -> ' + data['traffic'] ) 
+    //     $('#stats_sales').html( data['sales'] );
+    // });
 
+    // $.getJSON('/api/stats/sales', function( data ) { 
+    //     //console.log( ' -> ' + data['traffic'] ) 
+    //     $('#stats_sale').html( data['sales'] );
+    // });
     // Update the Perf cell
     $.getJSON('/api/stats/perf', function( data ) { 
         //console.log( ' -> ' + data['traffic'] ) 
