@@ -98,7 +98,7 @@ def api_detectDiabetes():
 
   
           
-@app.errorhandler(Exception)
-def unhandled_exception(e):
-    return render_template('layouts/auth-default.html',
-                                content=render_template( 'pages/404.html' ) )
+# @app.errorhandler(Exception)
+# def unhandled_exception(e):
+#     return render_template('layouts/auth-default.html',
+#                                 content=render_template( 'pages/404.html' ) )

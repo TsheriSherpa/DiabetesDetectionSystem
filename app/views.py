@@ -136,6 +136,7 @@ def detectDiabetes():
                             navieBayesResult=navieBayesResult, dtResult= decisionTreeResult ))
 
 
+
 @app.route('/detect-diabetes.html', methods=["GET", "POST"])
 def detectDiabetesPage():
     if not current_user.is_authenticated:
@@ -143,12 +144,14 @@ def detectDiabetesPage():
     msg = request.args.get('msg')
     knnResult = request.args.get('knnResult')
     navieBayesResult = request.args.get('navieBayesResult')
+    decisionTreeResult = request.args.get('decisionTreeResult')
     form  = ProfileUpdateForm(request.form) 
     
     return render_template('layouts/default.html', 
                            content = render_template('pages/detect-diabetes.html', 
                            form=form, msg=msg, knnResult=knnResult, 
-                           navieBayesResult=navieBayesResult))
+                           navieBayesResult=navieBayesResult,
+                           decisionTreeResult=decisionTreeResult))
     
 
 # App main route + generic routing
