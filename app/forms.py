@@ -11,6 +11,11 @@ class RegisterForm(FlaskForm):
 	password            = PasswordField(u'Password'          , validators=[DataRequired()])
 	confirm_password    = PasswordField(u'confirm-password'  , validators=[DataRequired()])
 	email               = StringField  (u'Email'             , validators=[DataRequired(), Email()])
+ 
+class PasswordResetForm(FlaskForm):
+    password            = PasswordField(u'Password'          , validators=[DataRequired()])
+    confirm_password    = PasswordField(u'confirm-password'  , validators=[DataRequired()])
+    token               = PasswordField(u'token'             , validators=[DataRequired()])
 
 class ProfileUpdateForm(FlaskForm):
     phone       = StringField  (u'phone'      ,  validators=[DataRequired()])
