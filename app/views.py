@@ -2,15 +2,16 @@
 import os, logging 
 
 # Flask modules
-from flask               import render_template, request, url_for, redirect, send_from_directory
+from flask               import render_template, request, url_for, redirect, send_from_directory, flash
 from flask_login         import login_user, logout_user, current_user, login_required
 from werkzeug.exceptions import HTTPException, NotFound, abort
 from app                 import api
+from flask_mail          import Message
 
 # App modules
-from app        import app, lm, db, bc
+from app        import app, lm, db, bc, mail
 from app.models import User
-from app.forms  import LoginForm, RegisterForm, ProfileUpdateForm, DetectDiabetesForm
+from app.forms  import LoginForm, RegisterForm, ProfileUpdateForm, DetectDiabetesForm, PasswordResetForm
 from app.test   import checkUsingKNN, checkUsingNaiveBayes, checkUsingDT
 
 # provide login manager with load_user callback
@@ -153,6 +154,75 @@ def detectDiabetesPage():
                            navieBayesResult=navieBayesResult,
                            decisionTreeResult=decisionTreeResult))
     
+
+@app.route('/send_email', methods=[ "GET" ])
+def send_email():
+    email = request.args.get('email')
+    user = User.query.filter_by(email=email).first()
+    if user:
+        try :
+            send_email_to_user(user)
+            response = {
+                'data':"Password reset link has been sent to your email.",
+                'status_code': '200'
+            }
+        except:
+            response = {
+                'data':"Could not send email at this moment.",
+                'status_code': '500'
+            }
+    else:
+        response = {
+            'data':"Email does not exist.",
+            'status_code': '400'
+        }
+    return response
+
+@app.route("/reset_password_request/<token>", methods=[ 'GET', 'POST' ])
+def password_reset_view(token):
+    token =token
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('That is inavlid or expired token', 'warning')
+        return redirect(url_for('login'))
+    form = PasswordResetForm()
+    return render_template('layouts/auth-default.html',
+                            content=render_template( 'pages/reset_password.html', title='Reset Password', form = form, token=token))
+        
+        
+def send_email_to_user(user):
+    token = User.get_reset_token(user)
+    msg = Message('Password Reset Request',
+                   sender='noreply@demo.com', 
+                   recipients = [user.email])
+    msg.body = '''To reset your password visit the following link:
+'''+url_for('password_reset_view', token=token, _external=True)+'''
+
+If you did not make this request than ignore this mail.
+'''
+    mail.send(msg)
+   
+    
+@app.route("/reset-password", methods=[ "GET", "POST"])
+def reset_password():
+    msg = None
+    if current_user.is_authenticated:
+        return redirect(url_for('/'))
+    form = PasswordResetForm()
+    loginForm = LoginForm()
+    if form.validate_on_submit():
+        user = User.verify_reset_token(request.form.get('token'))
+        if user:
+            password = request.form.get('password')
+            user.password = bc.generate_password_hash(password)
+            db.session.commit()
+            msg = "Password changed. Now you can login."
+        else:
+            msg = "Sorry Invalid token."
+    return render_template('layouts/auth-default.html',
+                        content=render_template( 'pages/login.html', form=loginForm, msg=msg ) )
 
 # App main route + generic routing
 @app.route('/', defaults={'path': 'detect-diabetes.html'}, methods=["GET", "POST"])
