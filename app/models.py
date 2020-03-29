@@ -1,4 +1,5 @@
 from app            import db, app
+from random         import randint
 from flask_login    import UserMixin
 from itsdangerous   import TimedJSONWebSignatureSerializer  as Serializer
 
@@ -16,8 +17,9 @@ class User(UserMixin, db.Model):
     description = db.Column(db.String(200))
     country     = db.Column(db.String(200))
     city        = db.Column(db.String(200))
+    password_reset_token = db.Column(db.String(200))
 
-    def __init__(self, email, password, firstname= "", lastname="", address="", description="", country="", city= "",  phone=""):
+    def __init__(self, email, password, firstname= "", lastname="", address="", description="", country="", city= "",  phone="", password_reset_token=""):
         self.phone       = phone
         self.password    = password
         self.email       = email
@@ -27,6 +29,7 @@ class User(UserMixin, db.Model):
         self.description = description
         self.country     = country
         self.city        = city
+        self.password_reset_token = password_reset_token
 
     def __repr__(self):
         return '<User %r - %s>' % (self.id) % (self.email)
@@ -48,5 +51,11 @@ class User(UserMixin, db.Model):
         except:
             return None
         return User.query.get(user_id)
+    
+    @staticmethod
+    def get_token(n=6):
+        range_start = 10**(n-1)
+        range_end = (10**n)-1
+        return randint(range_start, range_end)
         
         

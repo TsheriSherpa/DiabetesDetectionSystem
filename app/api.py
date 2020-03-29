@@ -1,15 +1,25 @@
 import os
 from app.models import User
-from app        import app, db, bc
-from flask      import request, make_response, jsonify, render_template
+from app        import app, db, bc, mail
+from flask_mail import Message
+from flask      import request, make_response, jsonify, render_template, url_for
 from app.test   import checkUsingKNN, checkUsingNaiveBayes, checkUsingDT
 
 
 PREFIX = "/api"
-@app.route(PREFIX+'/login', methods=[ "POST" ])
+@app.route(PREFIX+'/login', methods=[ 'GET', 'OPTIONS', 'POST'])
 def api_login():
-    email = request.form.get('email').strip()
-    password = request.form.get('password').strip()
+    dat = {
+        'Allow' : ['POST', 'OPTIONS'],
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']
+    }
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200, dat
+    print(str(request.args) + 'sdlfjkdsljf')
+    email = request.json['email'].strip()
+    password = request.json['password'].strip()
     user = User.query.filter_by(email=email).first()
     if user:
         if bc.check_password_hash(user.password, password):
@@ -20,35 +30,45 @@ def api_login():
                 "phone" : user.phone if (user.phone) else "",
                 "address" : user.address if (user.address) else ""
             }
-            return jsonify(data), 200
+            return jsonify(data), 200, dat
         else:
-            msg = "Incorrect password. Please try again." 
+            msg = "Incorrect password. Please try again."   
     else:
         msg = "Incorrect email or password."
-    return jsonify({"error":msg}), 422
+    return jsonify({"error":msg}), 422, dat
 
 
 
-@app.route(PREFIX+"/register", methods=[ "POST" ])
+@app.route(PREFIX+"/register", methods=[ "GET", "POST", "OPTIONS"])
 def api_register():
-    password        = request.form.get('password',         '', type=str) 
-    email           = request.form.get('email'   ,         '', type=str).lower()
-    confirmPassword = request.form.get('confirm_password', '', type=str)
+    # try:
+    dat = {
+            'Allow' : ['POST', 'OPTIONS'],
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Methods': ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']
+        }
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200, dat
+    password        = request.json['password']
+    email           = request.json['email'].lower()
+    confirmPassword = request.json['confirm_password']
     user_by_email   = User.query.filter_by(email=email).first()
     
     if confirmPassword == password:
         if user_by_email:
-            msg = 'User exists already.'
+            msg = 'User exists already.'    
         else:         
             pw_hash = bc.generate_password_hash(password)
             user = User(email, pw_hash)
             user.save()
-            return jsonify({'success': 'User created successfully'}), 200
+            return jsonify({'success': 'User created successfully'}), 200, dat
     else:
         msg = 'Password do not match'
     
-    return jsonify({'error':msg}), 422
-    
+    return jsonify({'error':msg}), 422, dat
+    # except (Exception):
+        # return jsonify({'error':'error'}), 422, dat
 
 
 @app.route(PREFIX+'/update', methods = ['POST'])
@@ -96,8 +116,75 @@ def api_detectDiabetes():
         'decisionTreeResult' : decisionTreeResult
     }), 200
 
-  
-          
+@app.route(PREFIX+'/forgot_password', methods=['GET', 'POST'])
+def api_send_reset_token():
+    email = request.form.get('email')
+    user = User.query.filter_by(email=email).first()
+    if user:
+        try :
+            send_email_to_user(user)
+            response = {
+                'data':"Password reset link has been sent to your email.",
+                'status_code': '200'
+            }
+        except:
+            response = {
+                'data':"Could not send email at this moment.",
+                'status_code': '500'
+            }
+    else:
+        response = {
+            'data':"Email does not exist.",
+            'status_code': '422'
+        }
+    return response
+
+def send_email_to_user(user):
+    token = user.get_token()
+    user.password_reset_token = token
+    user.save()
+    print(user.email)
+    msg = Message('Password Reset Request',
+                   sender='noreply@demo.com', 
+                   recipients = [user.email])
+    msg.body = '''To reset your password use this token:
+token-key = '''+str(token)+'''
+
+This is one time token and cannot be used again.
+If you did not make this request than ignore this mail.
+'''
+    mail.send(msg)
+    
+@app.route(PREFIX+'/reset-password', methods=['GET', 'POST'])
+def api_reset_password():
+    token = request.form.get('token')
+    user = User.query.filter_by(password_reset_token=token).first()
+    if user:
+        return jsonify({'data' : 'valid token'}), 200
+    else:
+        return jsonify({'data' : 'invalid token'}), 422
+    
+        
+@app.route(PREFIX+'/change-password', methods=['GET', 'POST'])
+def api_change_password():
+    password = request.form.get('password')
+    confirmPassword = request.form.get('confirm-password')
+    token = request.form.get('token')
+    user = User.query.filter_by(password_reset_token=token).first()
+    if user:
+        user.password_reset_token = ""
+        if(confirmPassword == password):
+            user.password = bc.generate_password_hash(password)
+            user.save()
+            return jsonify({'data' : 'password changed successful'}), 200
+        else:
+            return jsonify({'data' : 'password don not match'}), 422
+    else:
+        return jsonify({'data' : 'invalid token'}), 422
+            
+        
+    
+    
 # @app.errorhandler(Exception)
 # def unhandled_exception(e):
 #     return render_template('layouts/auth-default.html',

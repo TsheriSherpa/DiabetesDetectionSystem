@@ -29,7 +29,7 @@ def logout():
 # Register a new user
 @app.route('/register.html', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm(request.form)
+    form = RegisterForm(request.form, csrf_enabled=False)
     msg = None
 
     if request.method == 'GET': 

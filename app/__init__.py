@@ -1,6 +1,6 @@
 import os
 
-from flask            import Flask
+from flask            import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_login      import LoginManager
 from flask_bcrypt     import Bcrypt
@@ -24,6 +24,8 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = "tsherisherpa@gmail.com"
 app.config['MAIL_PASSWORD'] = "Gmail_@123"
+app.config['WTF_CSRF_ENABLED'] = True
+
 
 mail= Mail(app)
 
