@@ -17,3 +17,4 @@ myenv.sh
 *.log
 .gitignore
 app/configuration.py
+venv

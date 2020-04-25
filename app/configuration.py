@@ -10,4 +10,5 @@ class Config():
 	
 	SQLALCHEMY_TRACK_MODIFICATIONS 	= False
 	
-	SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root@localhost:3306/flask_db'
+	SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'database.db')
+	# SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root@localhost:3306/flask_db'
