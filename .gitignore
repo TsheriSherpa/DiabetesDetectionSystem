@@ -16,3 +16,6 @@ __pycache__
 myenv.sh
 *.log
 .gitignore
+diabetesModel/
+diabetesModel/*
+fypenv/
