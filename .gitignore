@@ -17,5 +17,4 @@ myenv.sh
 *.log
 .gitignore
 diabetesModel/
-diabetesModel/*
 fypenv/
