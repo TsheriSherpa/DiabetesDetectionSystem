@@ -12,3 +12,4 @@ class Config():
 	
 	SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'database.db')
 	# SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root@localhost:3306/flask_db'
+	WTF_CSRF_CHECK_DEFAULT = False

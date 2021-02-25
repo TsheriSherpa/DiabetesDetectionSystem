@@ -1,15 +1,16 @@
-FROM python:3-alpine
+FROM python:3.8
+LABEL maintainer=="Tsheri Sherpa"
 
-LABEL maintainer="Tsheri Sherpa" 
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get -yq update
+RUN apt-get -yq install python3-dev default-libmysqlclient-dev build-essential
+
+RUN pip install --upgrade pip
 
 COPY . /flaskapp
 
 WORKDIR /flaskapp
 
-RUN apk add build-base wget openblas-dev
-
-RUN apk add python3-dev openssl-dev libffi-dev musl-dev gcc && pip3 install --upgrade pip
-
-RUN pip3 install -r requirements.txt
-
-CMD ["python", "run.py"]
+RUN pip install -r requirements.txt

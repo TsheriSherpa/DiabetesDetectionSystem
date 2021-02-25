@@ -1,0 +1,20 @@
+version: "3.3"
+services:
+    web:
+        build: .
+        restart: always
+        command: "flask run -h 0.0.0.0 -p 5000"
+        volumes:
+          -  .:/flaskapp
+        ports:
+            - "5000:5000"
+        depends_on:
+          -  redis
+        links:
+          -  redis
+    redis:
+        image: "redis:alpine"
+        restart: always
+        ports:
+          -  "6379:6379"
+        
