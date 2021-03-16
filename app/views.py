@@ -166,7 +166,8 @@ def send_email():
                 'data':"Password reset link has been sent to your email.",
                 'status_code': '200'
             }
-        except:
+        except Exception as e:
+            print(e)
             response = {
                 'data':"Could not send email at this moment.",
                 'status_code': '500'

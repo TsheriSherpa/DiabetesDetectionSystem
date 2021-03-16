@@ -5,6 +5,7 @@ services:
         restart: always
         command: "flask run -h 0.0.0.0 -p 5000"
         volumes:
+          -  static:/flaskapp/app/static/
           -  .:/flaskapp
         ports:
             - "5000:5000"
@@ -16,5 +17,6 @@ services:
         image: "redis:alpine"
         restart: always
         ports:
-          -  "6379:6379"
-        
+          -  "6379:6379"  
+volumes: 
+    static:

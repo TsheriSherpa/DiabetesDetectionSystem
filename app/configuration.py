@@ -1,12 +1,17 @@
+""" Configuration File	"""
 import os
+
+from dotenv import load_dotenv
 
 # Grabs the folder where the script runs.
 basedir = os.path.abspath(os.path.dirname(__file__))
+env_path = os.path.join(basedir, '.env')
+load_dotenv(dotenv_path=env_path)
 
 class Config():
 
 	CSRF_ENABLED = True
-	SECRET_KEY   = "77tgFCdrEEdv77554##@3" 
+	SECRET_KEY   = os.getenv("SECRET_KEY") 
 	
 	SQLALCHEMY_TRACK_MODIFICATIONS 	= False
 	
