@@ -7,4 +7,4 @@ myenv.sh
 *.log
 .gitignore
 env/
-.env
+env
