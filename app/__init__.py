@@ -35,6 +35,7 @@ lm.init_app(app) # init the login manager
 # app.config['MAIL_PASSWORD'] = str(os.getenv('MAIL_PASSWORD'))
 
 
+
 app.config['MAIL_SERVER'] = "smtp.gmail.com"
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -53,3 +54,7 @@ def initialize_database():
 
 # Import routing, models and Start the App
 from app import views, models
+
+port = int(os.environ.get('PORT', 5000))
+if __name__ == '__main__':
+    app.run(debug = True, host = '0.0.0.0')
