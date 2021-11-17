@@ -15,4 +15,4 @@ WORKDIR /flaskapp
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["python run.py"]
+ENTRYPOINT ["nohup python run.py &"]
