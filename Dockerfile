@@ -9,10 +9,12 @@ RUN apt-get -yq install python3-dev default-libmysqlclient-dev build-essential
 
 RUN pip install --upgrade pip
 
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
+
 COPY . /flaskapp
 
 WORKDIR /flaskapp
-
-RUN pip install -r requirements.txt
 
 CMD ["nohup", "python", "run.py", "&"]
