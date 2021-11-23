@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 # Grabs the folder where the script runs.
 basedir = os.path.abspath(os.path.dirname(__file__))
-env_path = os.path.join(basedir, '.env')
+env_path = os.path.join(basedir, '../.env')
 load_dotenv(dotenv_path=env_path)
 app = Flask(__name__)
 
@@ -33,7 +33,6 @@ lm.init_app(app) # init the login manager
 # app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL')
 # app.config['MAIL_USERNAME'] = str(os.getenv('MAIL_USERNAME'))
 # app.config['MAIL_PASSWORD'] = str(os.getenv('MAIL_PASSWORD'))
-
 
 
 app.config['MAIL_SERVER'] = "smtp.gmail.com"

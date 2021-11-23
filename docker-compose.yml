@@ -3,20 +3,29 @@ services:
     web:
         build: .
         restart: always
-        command: "flask run -h 0.0.0.0 -p 5000"
+        command: "gunicorn --reload --workers=2 --timeout=30 run:app --bind 0.0.0.0:8000"
         volumes:
           -  static:/flaskapp/app/static/
           -  .:/flaskapp
         ports:
-            - "5000:5000"
+            - "8000:8000"
         depends_on:
           -  redis
         links:
           -  redis
+
     redis:
         image: "redis:alpine"
         restart: always
         ports:
-          -  "6371:6379"  
+          -  "6371:6379"
+    
+    nginx:
+      build: ./nginx
+      restart: always
+      ports:
+        - "80:80"
+      depends_on:
+        - web
 volumes: 
     static:

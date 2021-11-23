@@ -13,8 +13,12 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY . /flaskapp
+ADD . /flaskapp
 
 WORKDIR /flaskapp
 
-CMD ["nohup", "python", "run.py", "&"]
+RUN cp /flaskapp/.env.example /flaskapp/.env
+
+RUN chmod +x /flaskapp/run.py
+# CMD ["nohup", "python", "run.py", "&"]
+EXPOSE 8000
