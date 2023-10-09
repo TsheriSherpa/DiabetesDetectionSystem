@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 # Grabs the folder where the script runs.
 basedir = os.path.abspath(os.path.dirname(__file__))
-env_path = os.path.join(basedir, '.env')
+env_path = os.path.join(basedir, '../.env')
 load_dotenv(dotenv_path=env_path)
 app = Flask(__name__)
 
@@ -53,3 +53,5 @@ def initialize_database():
 
 # Import routing, models and Start the App
 from app import views, models
+
+print('going well')
